@@ -438,7 +438,7 @@ where
     /// Each parameter is a 6-bit bitmask where bit 0 = DIO5, bit 5 = DIO10.
     ///
     /// # Arguments
-    /// * `enable` - Enable RF switch control (true to enable)
+    /// * `enable` - DIO mask for enable
     /// * `standby` - DIO mask for standby mode
     /// * `rx` - DIO mask for sub-GHz RX mode
     /// * `tx` - DIO mask for sub-GHz TX mode
@@ -455,7 +455,7 @@ where
     #[allow(clippy::too_many_arguments)]
     pub async fn set_dio_as_rf_switch(
         &mut self,
-        enable: bool,
+        enable: u8,
         standby: u8,
         rx: u8,
         tx: u8,
@@ -465,18 +465,7 @@ where
         wifi: u8,
     ) -> Result<(), RadioError> {
         let opcode = SystemOpCode::SetDioAsRfSwitch.bytes();
-        let cmd = [
-            opcode[0],
-            opcode[1],
-            if enable { 0x01 } else { 0x00 },
-            standby,
-            rx,
-            tx,
-            tx_hp,
-            tx_hf,
-            gnss,
-            wifi,
-        ];
+        let cmd = [opcode[0], opcode[1], enable, standby, rx, tx, tx_hp, tx_hf, gnss, wifi];
         self.write_command(&cmd).await
     }
 
